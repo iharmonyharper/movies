@@ -10,7 +10,6 @@ raise "File '#{file}' is not found" unless File.exist?(file)
 
 movies = CSV.read(file, :col_sep => '|').map {|movie| Hash[HEADERS.zip(movie)]}
 
-
 def filter(movies, keyword)
   movies.select {|movie| movie[:name][/#{keyword}/]}.map {|movie| "#{movie[:name]}, #{rating(movie[:rating])}"}
 end
