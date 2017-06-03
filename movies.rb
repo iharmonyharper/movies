@@ -24,6 +24,6 @@ def pretty_print(movies)
 end
 
 pretty_print(movies.sort_by {|m| m[:duration].to_i}.last(5))
-pretty_print(movies.select {|m| m[:genre][/^comedy$/i]}.sort_by {|m| m[:duration].to_i})
-puts (movies.sort_by {|m| m[:director].split(' ').last}).map {|m| m[:director]}
-puts movies.reject {|m| m[:country][/^usa$/i]}.count
+pretty_print(movies.select {|m| m[:genre].include? 'Comedy'}.sort_by {|m| m[:duration].to_i})
+puts (movies.map {|m| m[:director]}.sort_by {|name| name.split(' ').last})
+puts movies.count {|m| !m[:country].include? 'USA'}
