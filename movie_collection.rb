@@ -4,9 +4,10 @@ require 'date'
 class MovieCollection
   attr_reader :collection
 
-  def initialize(args = {})
-    @collection_raw_data = args.fetch(:collection_raw_data, [])
-    @movie_class = args.fetch(:movie_class, Movie)
+  def initialize(collection_raw_data: [],
+                 movie_class: Movie)
+    @collection_raw_data = collection_raw_data
+    @movie_class = movie_class
     @collection = @collection_raw_data.map {|data| @movie_class.new(data)}
   end
 
@@ -15,28 +16,17 @@ class MovieCollection
   end
 
   def sort_by(*fields)
-    sorted = all
-    fields.each do |field|
-      sorted = sorted.sort_by {|m| m.send(field).to_s}
-    end
-    sorted
+      all.sort_by {|m|  fields.map{|f| m.send(f)} }
   end
 
   def filter(**fields)
-    filtered = all
-    fields.each do |k, v|
-      filtered = filtered.select do |m|
-        case v
-          when Range
-            v.include? m.send(k).to_f.round(2)
-          else
-            _keywords = Array[*v]
-            _values = Array[*m.send(k)]
-            _values.join(',').include? _keywords.join(',')
-        end
-      end
+    fields.reduce(filtered=all) do |filtered, (k, v)|
+      filtered.select { |m|
+        (v.is_a?(Range) ? Array[v] : Array[*v]).all?{|value|
+          Array[*m.send(k)].any?{|item| (value === item) || (value === item.to_f.round(2))}
+        }
+      }
     end
-    filtered
   end
 
   def stats(field)
@@ -45,7 +35,7 @@ class MovieCollection
         statistics(field).map {|k, v| [Date::MONTHNAMES[k], v.count]}.to_h
       else
         statistics(field).map {|k, v| [k, v.count]}.to_h
-    end
+        _values = nil  end
   end
 
   private

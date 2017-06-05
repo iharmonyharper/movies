@@ -1,5 +1,6 @@
 require 'date'
 require 'ostruct'
+require 'json'
 
 class Movie < OpenStruct
   def initialize(args = {})
@@ -23,20 +24,23 @@ class Movie < OpenStruct
   end
 
   def has_genre?(name)
-    genre.include? name
+    genre.include?(name) ? true : raise("Genre '#{name}' is not found")
   end
 
-  def calculate_rating(rating_float)
-    asterisk_number = ((rating_float.to_f - 8.0).round(1) * 10)
-    asterisk_number > 0 ? '*' * asterisk_number : '*'
+  def pretty_print
+    JSON.pretty_generate(self.to_h)
   end
 
   def to_s
-    "#{calculate_rating(rating)}(#{rating}); #{name} (#{date}; #{genre}) - #{duration}) | link #{link}; year #{year}; country #{country}; director #{director}; actors #{actors}"
+    "#{calculate_rating}(#{rating}); #{title} (#{date}; #{genre}) - #{duration}) | link #{link}; year #{year}; country #{country}; director #{director}; actors #{actors}"
   end
 
-  def inspect
-    self.to_h
+  alias :inspect :pretty_print
+
+  private
+  def calculate_rating
+    asterisk_number = ((rating.to_f - 8.0).round(1) * 10)
+    asterisk_number > 0 ? '*' * asterisk_number : '*'
   end
 
 end
