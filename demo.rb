@@ -21,5 +21,5 @@ puts movies.all.first.has_genre?('Drama')
 puts movies.all.first.has_genre?('Comedy')
 puts movies.all.first.has_genre?('Cmoedy')
 rescue => e
-  puts e
+  p e
 end

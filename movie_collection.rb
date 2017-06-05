@@ -9,8 +9,8 @@ class MovieCollection
     @movie_class = movie_class
     @title = title
     @collection = @collection_raw_data.map {|data|
-      data[:movies_collection] = self
-      @movie_class.new(data)}
+      @movie_class.new(movies_collection: self, **data)}
+
   end
 
   def all
@@ -41,7 +41,7 @@ class MovieCollection
         statistics(field).map {|k, v| [Date::MONTHNAMES[k], v.count]}.to_h
       else
         statistics(field).map {|k, v| [k, v.count]}.to_h
-        _values = nil  end
+    end
   end
 
   private

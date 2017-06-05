@@ -1,18 +1,18 @@
 require 'date'
-require 'ostruct'
 require 'json'
 
-class Movie < OpenStruct
-  def initialize(args = {})
+class Movie
+  attr_reader :movies_collection
+
+  def initialize(movies_collection:, **args)
     args.each do |k, v|
-      unless k == :movies_collection
         value = v.split(/\s{0},\s{0}/)
-        args[k] = value.count > 1 ? value : value[0]
-      end
+        self.class.send(:attr_reader, k)
+        instance_variable_set("@#{k}", value.count > 1 ? value : value[0])
     end
-    args[:rating] = args[:rating].to_f.round(2)
-    args[:year] = args[:year].to_i
-    super(args)
+    @rating = @rating.to_f.round(2)
+    @year = @year.to_i
+    @movies_collection = movies_collection
   end
 
   def premier_month
@@ -28,11 +28,8 @@ class Movie < OpenStruct
   end
 
   def has_genre?(name)
-    if movies_collection.genres.include?(name)
-      genre.include?(name)
-    else
-      raise("Genre '#{name}' is not found in collection '#{movies_collection.title}'")
-    end
+    raise("Genre '#{name}' is not found in collection '#{movies_collection.title}'") unless movies_collection.genres.include?(name)
+    genre.include?(name)
   end
 
   def pretty_print
@@ -47,7 +44,7 @@ class Movie < OpenStruct
 
   private
   def calculate_rating
-    asterisk_number = ((rating.to_f - 8.0).round(1) * 10)
+    asterisk_number = ((rating - 8.0).round(1) * 10)
     asterisk_number > 0 ? '*' * asterisk_number : '*'
   end
 
