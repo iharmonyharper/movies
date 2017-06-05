@@ -4,7 +4,7 @@ require_relative 'csv_to_hash_converter'
 
 HEADERS = %i{link title year country date genre duration rating director actors}
 data = CsvToHashConverter.new(file_name: 'movies.txt', headers: HEADERS).data
-movies = MovieCollection.new(collection_raw_data: data)
+movies = MovieCollection.new(title: 'My collection', collection_raw_data: data)
 
 puts movies.all.first(5)
 puts movies.sort_by(:country, :date).first(5)
@@ -17,7 +17,9 @@ puts movies.stats(:premier_month)
 puts movies.stats(:actors)
 
 begin
-puts movies.all.sample.has_genre?('Cmoedy')
+puts movies.all.first.has_genre?('Drama')
+puts movies.all.first.has_genre?('Comedy')
+puts movies.all.first.has_genre?('Cmoedy')
 rescue => e
   puts e
 end

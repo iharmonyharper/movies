@@ -2,17 +2,23 @@ require 'date'
 
 
 class MovieCollection
-  attr_reader :collection
+  attr_reader :title, :collection
 
-  def initialize(collection_raw_data: [],
-                 movie_class: Movie)
+  def initialize(title: 'new_collection', collection_raw_data: [], movie_class: Movie)
     @collection_raw_data = collection_raw_data
     @movie_class = movie_class
-    @collection = @collection_raw_data.map {|data| @movie_class.new(data)}
+    @title = title
+    @collection = @collection_raw_data.map {|data|
+      data[:movies_collection] = self
+      @movie_class.new(data)}
   end
 
   def all
     collection
+  end
+
+  def genres
+    collection.map(&:genre).uniq
   end
 
   def sort_by(*fields)
@@ -20,10 +26,10 @@ class MovieCollection
   end
 
   def filter(**fields)
-    fields.reduce(filtered=all) do |filtered, (k, v)|
+    fields.reduce(all) do |filtered, (k, v)|
       filtered.select { |m|
         (v.is_a?(Range) ? Array[v] : Array[*v]).all?{|value|
-          Array[*m.send(k)].any?{|item| (value === item) || (value === item.to_f.round(2))}
+          Array[*m.send(k)].any?{|item| value === item }
         }
       }
     end

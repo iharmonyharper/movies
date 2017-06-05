@@ -5,9 +5,13 @@ require 'json'
 class Movie < OpenStruct
   def initialize(args = {})
     args.each do |k, v|
-      value = v.split(/\s{0},\s{0}/)
-      args[k] = value.count > 1 ? value : value[0]
+      unless k == :movies_collection
+        value = v.split(/\s{0},\s{0}/)
+        args[k] = value.count > 1 ? value : value[0]
+      end
     end
+    args[:rating] = args[:rating].to_f.round(2)
+    args[:year] = args[:year].to_i
     super(args)
   end
 
@@ -24,7 +28,11 @@ class Movie < OpenStruct
   end
 
   def has_genre?(name)
-    genre.include?(name) ? true : raise("Genre '#{name}' is not found")
+    if movies_collection.genres.include?(name)
+      genre.include?(name)
+    else
+      raise("Genre '#{name}' is not found in collection '#{movies_collection.title}'")
+    end
   end
 
   def pretty_print
