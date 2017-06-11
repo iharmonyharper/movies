@@ -3,24 +3,24 @@ describe Netflix do
 
   it 'is available as described_class' do
     expect(netflix.class).to eq(described_class)
+    expect(netflix.class.superclass).to eq(base_theater.class)
   end
 
   it '#show movie' do
-    netflix.customer = customer
-    customer.deposit(money)
-    expect(customer.account.balance).to eq(money)
+    netflix.pay(money)
+    expect(netflix.balance).to eq(money)
     expect(netflix.show(movie)).to eq('Now showing: (The Terminator) (время начала) - (время окончания)')
-    expect(customer.account.balance).to eq(money - ticket_price)
-    expect(netflix.account.balance).to eq(ticket_price)
+    expect(netflix.balance).to eq(money - ticket_price)
   end
 
-  it '#show with filters ' do
-    netflix.customer = customer
-    customer.deposit(money)
-    expect(customer.account.balance).to eq(money)
-    expect(netflix.show(title: /terminator$/i)).to eq('Now showing: (The Terminator) (время начала) - (время окончания)')
-    expect(customer.account.balance).to eq(money - ticket_price)
-    expect(netflix.account.balance).to eq(ticket_price)
+  [{ title: 'The Terminator' },
+   { title: /terminator$/i }].each do |movie|
+    it '#show movie with filter' do
+      netflix.pay(money)
+      expect(netflix.balance).to eq(money)
+      expect(netflix.show(movie)).to eq('Now showing: (The Terminator) (время начала) - (время окончания)')
+      expect(netflix.balance).to eq(money - ticket_price)
+    end
   end
 
   it '#how_much?' do

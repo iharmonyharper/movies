@@ -3,9 +3,8 @@ require 'date'
 class MovieCollection
   attr_reader :title, :collection, :collection_raw_data
 
-  def initialize(title: 'new_collection', collection_raw_data: [], movie_class: Movie)
+  def initialize(title: 'new_collection', collection_raw_data: [])
     @collection_raw_data = collection_raw_data
-    @movie_class = movie_class
     @title = title
     @collection = get_movies
   end
@@ -16,17 +15,8 @@ class MovieCollection
 
   def get_movies
     @collection_raw_data.map do |data|
-      case data[:year].to_i
-      when (1900...1945)
-        @movie_class = AncientMovie
-      when (1945...1968)
-        @movie_class = ClassicMovie
-      when (1968...2000)
-        @movie_class = ModernMovie
-      when (2000...2100)
-        @movie_class = NewMovie
-      end
-      @movie_class.new(movies_collection: self, **data)
+      movie_class = Movie.movies_catalog.select { |_k, v| v[:year] === data[:year].to_i }.keys.first
+      Object.const_get(movie_class).new(movies_collection: self, **data)
     end
   end
 

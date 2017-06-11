@@ -5,45 +5,43 @@ describe BaseTheater do
     expect(base_theater.class).to eq(described_class)
   end
 
-  it '#show movie' do
-    customer.deposit(25.00)
-    movie.ticket_price = 0.4
-    base_theater.customer = customer
-    expect(base_theater.account.balance).to be >= 0.00
+  it '#pay should add money to balance' do
+    base_theater.pay(1.00)
+    expect(base_theater.balance).to eq 1.00
+  end
 
-    3.times do
-      _customer_balance = customer.account.balance
-      _base_theatre_balance = base_theater.account.balance
-      puts "Before transaction: #{_customer_balance}  #{_base_theatre_balance}"
-
-      base_theater.show(movie)
-      _expected = _customer_balance - movie.ticket_price
-      expect(customer.account.balance).to eq(_expected >= 0.00 ? _expected : _customer_balance)
-      expect(base_theater.account.balance).to eq(_expected >= 0.00 ? _base_theatre_balance + movie.ticket_price : _base_theatre_balance)
-
-      _expected = (_customer_balance - movie.ticket_price) + (_base_theatre_balance + movie.ticket_price)
-      expect(customer.account.balance + base_theater.account.balance).to eq(_expected >= 0.00 ? _expected : 0.00)
+  [-0.01, -1].each do |amount|
+    it "#pay should raise exception if negative amount (#{amount}" do
+      expect { base_theater.pay(amount) }.to raise_error(PaymentError, 'Invalid payment operation')
     end
   end
 
-  it '#show movie according to filter' do
-    customer.deposit(25.00)
-    base_theater.customer = customer
-    expect(base_theater.account.balance).to be >= 0.00
-    movie = base_theater.movies_collection.filter(genre: 'Comedy', period: :classic)[0]
-    puts movie
+  it '#show should withdraw money from balance' do
+    base_theater.pay(money)
+    base_theater.show(movie)
+    expect(base_theater.balance).to eq(money - movie.ticket_price)
+  end
 
-    3.times do
-      _customer_balance = customer.account.balance
-      _base_theatre_balance = base_theater.account.balance
-      puts "Before transaction: #{_customer_balance}  #{_base_theatre_balance}"
-      base_theater.show(genre: 'Comedy', period: :classic)
-      _expected = _customer_balance - movie.ticket_price
-      expect(customer.account.balance).to eq(_expected >= 0.00 ? _expected : _customer_balance)
-      expect(base_theater.account.balance).to eq(_expected >= 0.00 ? _base_theatre_balance + movie.ticket_price : _base_theatre_balance)
-
-      _expected = (_customer_balance - movie.ticket_price) + (_base_theatre_balance + movie.ticket_price)
-      expect(customer.account.balance + base_theater.account.balance).to eq(_expected >= 0.00 ? _expected : 0.00)
+  [0.00, 0, 0.01, -0, -0.00, 0.0000000001].each do |balance|
+    it "#withdraw raise exception if not enough money (balance=#{balance})" do
+      base_theater.pay(balance)
+      expect(base_theater.balance).to eq(balance)
+      expect { base_theater.show(movie) }.to raise_error(AccountBalanceError, 'Not enough balance for BaseTheater')
     end
+  end
+
+  it '#withdraw raise exception if not enough money' do
+    base_theater.pay(movie.ticket_price * 3 - 0.01)
+    expect(base_theater.balance).to eq(movie.ticket_price * 3 - 0.01)
+    2.times { base_theater.show(movie) }
+    expect { base_theater.show(movie) }.to raise_error(AccountBalanceError, 'Not enough balance for BaseTheater')
+  end
+
+  it '#show movie according to filter' do
+    base_theater.pay(money)
+    filter = { genre: 'Comedy', period: :classic }
+    movie = base_theater.movies_collection.filter(filter).first
+    base_theater.show(filter)
+    expect(base_theater.balance).to eq(money - movie.ticket_price)
   end
 end
