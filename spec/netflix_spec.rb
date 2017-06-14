@@ -1,30 +1,70 @@
 describe Netflix do
-  include_context 'test data'
 
-  it 'is available as described_class' do
-    expect(netflix.class).to eq(described_class)
-    expect(netflix.class.superclass).to eq(base_theater.class)
+  before(:each) do
+    @movie_a = {title: 'Roman Holiday', year: 1953, genre: 'Comedy,Romance', ticket_price: 4, rating: 8.2}
+    @movie_b = {title: 'Roman Holiday (new)', year: 2000, genre: 'Comedy', ticket_price: 4, rating: 8.2}
+    @collection = MovieCollection.new(title: 'TestCollection', collection_raw_data: [@movie_a, @movie_b])
+    @netflix = Netflix.new(movies_collection: @collection)
   end
 
-  it '#show movie' do
-    netflix.pay(money)
-    expect(netflix.balance).to eq(money)
-    expect(netflix.show(movie)).to eq('Now showing: (The Terminator) (время начала) - (время окончания)')
-    expect(netflix.balance).to eq(money - ticket_price)
-  end
-
-  [{ title: 'The Terminator' },
-   { title: /terminator$/i }].each do |movie|
-    it '#show movie with filter' do
-      netflix.pay(money)
-      expect(netflix.balance).to eq(money)
-      expect(netflix.show(movie)).to eq('Now showing: (The Terminator) (время начала) - (время окончания)')
-      expect(netflix.balance).to eq(money - ticket_price)
+  context '#pay' do
+    subject {@netflix.pay(25) }
+    it 'changes balance if payment' do
+      expect { subject}.to change {@netflix.balance}.from(0).to(25)
     end
   end
 
-  it '#how_much?' do
-    expect(movie.ticket_price).to eq(ticket_price)
-    expect(netflix.how_much?('The Terminator')).to eq(movie.ticket_price)
+  context '#show with 1 search result' do
+    before {@netflix.pay(25) }
+    subject {@netflix.show(genre: 'Comedy', period: :classic)}
+
+    it 'shows movie' do
+      expect {print subject}.to output('Now showing: (Roman Holiday) (время начала) - (время окончания)').to_stdout
+    end
+
+    it 'changes balance on ticket price amount' do
+      expect {subject}.to change {@netflix.balance}.from(25).to(21)
+    end
   end
+
+   context 'nothing to #show' do
+    before {@netflix.pay(25) }
+    subject {@netflix.show(title: 'Not Found')}
+    it 'raise exception if no movie' do
+      expect {subject}.to raise_error(MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
+    end
+    it 'NOT changes balance if no movie' do
+      expect {subject rescue nil}.not_to change {@netflix.balance}
+    end
+   end
+
+  context 'with multiple search results' do
+    before {@netflix.pay(25) }
+    subject {@netflix.show(genre: 'Comedy') }
+    it 'shows random movie' do
+      expect(['Now showing: (Roman Holiday) (время начала) - (время окончания)',
+              'Now showing: (Roman Holiday (new)) (время начала) - (время окончания)']).to include(subject)
+    end
+    it 'changes balance on ticket price amount' do
+      expect {subject}.to change {@netflix.balance}.from(25).to(21)
+    end
+  end
+
+  context 'with empty filter' do
+    before {@netflix.pay(25) }
+    subject {@netflix.show() }
+    it 'shows random movie' do
+      expect(['Now showing: (Roman Holiday) (время начала) - (время окончания)',
+              'Now showing: (Roman Holiday (new)) (время начала) - (время окончания)']).to include(subject)
+    end
+    it 'changes balance on ticket price amount' do
+      expect {subject}.to change {@netflix.balance}.from(25).to(21)
+    end
+  end
+
 end
+
+
+
+
+

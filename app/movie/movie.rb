@@ -2,8 +2,7 @@ require 'date'
 require 'json'
 
 class Movie
-  attr_reader :movies_collection, :period
-  attr_accessor :ticket_price
+  attr_reader :movies_collection
 
   MOVIES_CATALOG = { 'AncientMovie' => { ticket_price: 1.00, period: :ancient, year: (1900...1945) },
                      'ClassicMovie' => { ticket_price: 1.50, period: :classic, year: (1945...1968) },
@@ -12,15 +11,35 @@ class Movie
 
   def initialize(movies_collection: [], **args)
     args.each do |k, v|
-      value = v.split(/\s{0},\s{0}/)
+      value = v.split(/\s{0},\s{0}/) rescue [v]
       self.class.send(:attr_reader, k)
       instance_variable_set("@#{k}", value.count > 1 ? value : value[0])
     end
-    @rating = @rating.to_f.round(2)
-    @year = @year.to_i
-    @period = Movie.movies_catalog[self.class.to_s][:period]
-    @ticket_price = Movie.movies_catalog[self.class.to_s][:ticket_price]
     @movies_collection = movies_collection
+  end
+
+  def self.build(movies_collection:[], data: {})
+      movie_class = Movie.movies_catalog.detect { |_k, v|
+        v[:year].cover?(data[:year].to_i)
+      }.first
+      Object.const_get(movie_class).new(movies_collection: movies_collection, **data)
+
+  end
+
+  def rating
+    @rating || 0.0
+  end
+
+  def year
+    @year.to_i
+  end
+
+  def period
+    self.class.to_s.split('Movie').first.downcase.to_sym
+  end
+
+  def ticket_price
+    @ticket_price || Movie.movies_catalog[self.class.to_s][:ticket_price]
   end
 
   def premier_month

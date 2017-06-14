@@ -14,10 +14,11 @@ class MovieCollection
   end
 
   def get_movies
-    @collection_raw_data.map do |data|
-      movie_class = Movie.movies_catalog.select { |_k, v| v[:year] === data[:year].to_i }.keys.first
-      Object.const_get(movie_class).new(movies_collection: self, **data)
-    end
+    @collection_raw_data.map{ |data|
+      Movie.build(movies_collection:self, data: data)
+    }
+
+
   end
 
   def genres
