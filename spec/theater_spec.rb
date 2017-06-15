@@ -44,21 +44,21 @@ describe Theater do
 
 context 'theater is open' do
     it '#show movie according to selected time: morning' do
-     expect {print @theater.show('09:00')}.to output("Now showing: (The General) (время начала) - (время окончания)").to_stdout
+     expect {print @theater.show('09:00')}.to output("Now showing: The General #{Time.now} - < duration unknown >").to_stdout
   end
 
     it '#show movie according to selected time: day' do
-      movies = ["Now showing: (The Wolf of Wall Street) (время начала) - (время окончания)",
-                "Now showing: (Nausicaä of the Valley of the Wind) (время начала) - (время окончания)"]
+      movies = ["Now showing: The Wolf of Wall Street #{Time.now} - < duration unknown >",
+                "Now showing: Nausicaä of the Valley of the Wind #{Time.now} - < duration unknown >"]
       expect(movies).to include @theater.show('14:00')
     end
 
 
     it '#show movie according to selected time: evening' do
-      movies = ["Now showing: (3 Idiots) (время начала) - (время окончания)",
-                "Now showing: (The Thing) (время начала) - (время окончания)",
-                "Now showing: (Rocky) (время начала) - (время окончания)",
-                "Now showing: (The Kid) (время начала) - (время окончания)"
+      movies = ["Now showing: 3 Idiots #{Time.now} - < duration unknown >",
+                "Now showing: The Thing #{Time.now} - < duration unknown >",
+                "Now showing: Rocky #{Time.now} - < duration unknown >",
+                "Now showing: The Kid #{Time.now} - < duration unknown >"
       ]
 
       expect(movies).to include @theater.show('19:00')

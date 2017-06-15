@@ -30,7 +30,7 @@ describe Netflix do
     subject {@netflix.show(genre: 'Comedy', period: :classic)}
 
     it 'shows movie' do
-      expect {print subject}.to output('Now showing: (Roman Holiday) (время начала) - (время окончания)').to_stdout
+      expect {print subject}.to output("Now showing: Roman Holiday #{Time.now} - < duration unknown >").to_stdout
     end
 
     it 'changes balance on ticket price amount' do
@@ -53,8 +53,8 @@ describe Netflix do
     before {@netflix.pay(25) }
     subject {@netflix.show(genre: 'Comedy') }
     it 'shows random movie' do
-      expect(['Now showing: (Roman Holiday) (время начала) - (время окончания)',
-              'Now showing: (Roman Holiday (new)) (время начала) - (время окончания)']).to include(subject)
+      expect(["Now showing: Roman Holiday #{Time.now} - < duration unknown >",
+              "Now showing: Roman Holiday (new) #{Time.now} - < duration unknown >"]).to include(subject)
     end
     it 'changes balance on ticket price amount' do
       expect {subject}.to change {@netflix.balance}.from(25).to(21)
@@ -65,8 +65,8 @@ describe Netflix do
     before {@netflix.pay(25) }
     subject {@netflix.show() }
     it 'shows random movie' do
-      expect(['Now showing: (Roman Holiday) (время начала) - (время окончания)',
-              'Now showing: (Roman Holiday (new)) (время начала) - (время окончания)']).to include(subject)
+      expect(["Now showing: Roman Holiday #{Time.now} - < duration unknown >",
+              "Now showing: Roman Holiday (new) #{Time.now} - < duration unknown >"]).to include(subject)
     end
     it 'changes balance on ticket price amount' do
       expect {subject}.to change {@netflix.balance}.from(25).to(21)

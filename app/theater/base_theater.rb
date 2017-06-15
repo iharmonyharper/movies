@@ -16,7 +16,11 @@ class BaseTheater
     movie ||= random_movie(movies_collection.filter( **filter))
     raise(MovieSearchError,"No results for '#{filter}'") unless movie
     yield(movie) if block_given?
-    "Now showing: (#{movie.title}) (время начала) - (время окончания)"
+    if @duration
+      "Now showing: #{movie.title} #{Time.now} - #{Time.now + (@duration.to_i * 60 * 60) }"
+    else
+      "Now showing: #{movie.title} #{Time.now} - < duration unknown >"
+    end
   end
 
   def how_much?(movie_title)
