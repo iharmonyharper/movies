@@ -8,7 +8,7 @@ class Theater < BaseTheater
 
   FILTERS = { morning: { period: :ancient, genres: NOT_DRAMA_HORROR_REGEX },
               day: { period: NOT_ANCIENT_REGEX , genres: NOT_DRAMA_HORROR_REGEX, genre: /(comedy)|(adventure)/i  },
-              evening: { genres: /(drama)|(horror)/i } }.freeze
+              evening: { genres: /(drama)|(horror)/i } }
 
   SCHEDULE = { morning: ['09:00', '14:00'] ,
     day:  ['14:00', '19:00'] ,
@@ -16,21 +16,20 @@ class Theater < BaseTheater
 
 
   def when?(movie_title)
-    movie = movies_collection.filter(title: movie_title)
-    if %w[Drama Horror].any? { |genre| movie.genre.include? genre }
-      schedule[:evening].join(' - ')
-    elsif movie.period == :ancient
-      schedule[:morning].join(' - ')
-    elsif %w[Comedy Adventure].any? { |genre| movie.genre.include? genre }
-      schedule[:day].join(' - ')
-    else
-      'Not found'
-    end
+    t = time_filters.detect{|(time, filter)|
+      movie = movies_collection.filter({title: movie_title}.merge(filter))
+      time unless movie.empty?
+    }
+    t ? schedule[t.first].join(' - ') : 'Not found'
   end
 
   def schedule
     @schedule ||= SCHEDULE
 
+  end
+
+  def time_filters
+    FILTERS
   end
 
   def filters(time)
