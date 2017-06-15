@@ -26,6 +26,10 @@ class Movie
 
   end
 
+  def genres
+    [@genre].join(',')
+  end
+
   def rating
     @rating || 0.0
   end

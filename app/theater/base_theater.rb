@@ -13,7 +13,7 @@ class BaseTheater
   end
 
   def show(movie = nil, **filter)
-    movie ||= random_movie(movies_collection.filter(filter))
+    movie ||= random_movie(movies_collection.filter( **filter))
     raise(MovieSearchError,"No results for '#{filter}'") unless movie
     yield(movie) if block_given?
     "Now showing: (#{movie.title}) (время начала) - (время окончания)"

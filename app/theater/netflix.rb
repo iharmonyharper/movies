@@ -19,15 +19,15 @@ class Netflix < BaseTheater
     @balance += amount
   end
 
+  private
   def withdraw(amount)
     raise(AccountBalanceError, "Not enough balance for #{self.class}") if (@balance - amount).negative?
     @balance -= amount
   end
-  private :withdraw
 
-  class AccountBalanceError < StandardError
-  end
-  class PaymentError < StandardError
-  end
+end
 
+class AccountBalanceError < StandardError
+end
+class PaymentError < StandardError
 end

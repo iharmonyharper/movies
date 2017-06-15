@@ -29,7 +29,7 @@ class MovieCollection
     all.sort_by { |m|  fields.map { |f| m.send(f) } }
   end
 
-  def filter(**fields)
+  def filter( **fields)
     fields.reduce(all) do |filtered, (k, v)|
       filtered.select do |m|
         (v.is_a?(Range) ? Array[v] : Array[*v]).all? do |value|

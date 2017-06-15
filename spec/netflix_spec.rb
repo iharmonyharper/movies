@@ -14,6 +14,17 @@ describe Netflix do
     end
   end
 
+  context 'not enough money to #pay' do
+    subject {@netflix.show(title: 'Roman Holiday')}
+    it 'raise exception if not enough money' do
+      expect {subject}.to raise_error(AccountBalanceError, 'Not enough balance for Netflix')
+    end
+    it 'NOT changes balance if not not enough money' do
+      expect {subject rescue nil}.not_to change {@netflix.balance}
+    end
+  end
+
+
   context '#show with 1 search result' do
     before {@netflix.pay(25) }
     subject {@netflix.show(genre: 'Comedy', period: :classic)}
