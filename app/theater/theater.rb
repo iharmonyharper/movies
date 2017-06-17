@@ -1,48 +1,43 @@
 require_relative 'base_theater'
 
 class Theater < BaseTheater
-  attr_accessor :schedule
+  attr_accessor :schedule, :filters
 
-  NOT_DRAMA_HORROR_REGEX = /^(?!.*(drama|horror)).*$/i
-  NOT_ANCIENT_REGEX = /^(?!.*(ancient)).*$/i
+  FILTERS = {  morning: { period: :ancient },
+               evening: { genres: /(drama)|(horror)/i },
+               day:     { genres: /(comedy)|(adventure)/i } }.freeze
 
-  FILTERS = { morning: { period: :ancient, genres: NOT_DRAMA_HORROR_REGEX },
-              day: { period: NOT_ANCIENT_REGEX , genres: NOT_DRAMA_HORROR_REGEX, genre: /(comedy)|(adventure)/i  },
-              evening: { genres: /(drama)|(horror)/i } }
-
-  SCHEDULE = { morning: ['09:00', '14:00'] ,
-    day:  ['14:00', '19:00'] ,
-    evening:  ['19:00', '23:00'] }
-
+  SCHEDULE = { morning: ('09:00'..'14:00'),
+               day:     ('14:00'..'19:00'),
+               evening: ('19:00'..'23:00') }.freeze
 
   def when?(movie_title)
-    t = time_filters.detect{|(time, filter)|
-      movie = movies_collection.filter({title: movie_title}.merge(filter))
-      time unless movie.empty?
-    }
-    t ? schedule[t.first].join(' - ') : 'Not found'
+    movie = movies_collection.filter(title: movie_title).first
+    return 'Not found' unless movie
+    time, = filters.detect do |_, filter|
+      movie.matches?(**filter)
+    end
+    return 'Not found' unless time
+    schedule[time].first
+  end
+
+  def filters
+    @filters || FILTERS
   end
 
   def schedule
-    @schedule ||= SCHEDULE
-
-  end
-
-  def time_filters
-    FILTERS
-  end
-
-  def filters(time)
-    FILTERS[time]
+    @schedule || SCHEDULE
   end
 
   def show(time)
-    t = schedule.select{|k,v| v[0] == time }.keys.first
-    if t
-      super(nil,   **filters(t))
-    else
-      'No movies for this time'
+    t, = schedule.detect do |_time, time_range|
+      begin
+        time_range.cover? time
+      rescue
+        nil
+      end
     end
-
+    return 'No movies for this time' unless t
+    super(nil, **filters[t])
   end
 end

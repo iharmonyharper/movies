@@ -14,11 +14,9 @@ class MovieCollection
   end
 
   def get_movies
-    @collection_raw_data.map{ |data|
-      Movie.build(movies_collection:self, data: data)
-    }
-
-
+    @collection_raw_data.map do |data|
+      Movie.build(movies_collection: self, data: data)
+    end
   end
 
   def genres
@@ -29,13 +27,15 @@ class MovieCollection
     all.sort_by { |m|  fields.map { |f| m.send(f) } }
   end
 
-  def filter( **fields)
+  def filter(**fields)
     fields.reduce(all) do |filtered, (k, v)|
       filtered.select do |m|
         (v.is_a?(Range) ? Array[v] : Array[*v]).all? do |value|
-          Array[*m.send(k)].any? do |item|
-            value === item
-          end
+          if k == :exclude?
+            m.exclude?(value.first => value.last)
+          else
+            Array[*m.send(k)].any? { |item| value === item }
+           end
         end
       end
     end
