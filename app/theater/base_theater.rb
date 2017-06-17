@@ -22,7 +22,7 @@ class BaseTheater
              when?(movie.title)
            end
     if movie.duration
-      "Now showing: #{movie.title} #{time.strftime('%H:%M')} - #{(time + (movie.duration * 60)).strftime('%H:%M')}"
+      "Now showing: #{movie.title} #{time.strftime('%H:%M')} - #{(time + (movie.duration.to_i * 60)).strftime('%H:%M')}"
     else
       "Now showing: #{movie.title} #{time.strftime('%H:%M')} - < duration unknown >"
     end

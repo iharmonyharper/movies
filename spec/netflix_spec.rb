@@ -5,7 +5,12 @@ describe Netflix do
     @collection = MovieCollection.new(title: 'TestCollection', collection_raw_data: [@movie_a, @movie_b])
     @netflix = Netflix.new(movies_collection: @collection)
     @expected_show_output = proc { |title, duration = nil|
-      "Now showing: #{title} #{Time.now.strftime('%H:%M')} - #{duration || '< duration unknown >'}"
+      time = Time.now
+      if duration
+        "Now showing: #{title} #{time.strftime('%H:%M')} - #{(time + (duration * 60)).strftime('%H:%M')}"
+      else
+        "Now showing: #{title} #{time.strftime('%H:%M')} - < duration unknown >"
+      end
     }
   end
 
@@ -51,14 +56,8 @@ describe Netflix do
     it 'raise exception if no movie' do
       expect { subject }.to raise_error(Netflix::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
     end
-    it 'NOT changes balance if no movie' do
-      expect do
-        begin
-                  subject
-                rescue
-                  nil
-                end
-      end.not_to change { @netflix.balance }
+    it 'should not change balance if no movie' do
+      expect{subject rescue nil}.not_to change { @netflix.balance }
     end
   end
 

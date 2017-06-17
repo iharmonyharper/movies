@@ -4,12 +4,12 @@ class Theater < BaseTheater
   attr_accessor :schedule, :filters
 
   FILTERS = {  morning: { period: :ancient },
-               evening: { genres: /(drama)|(horror)/i },
-               day:     { genres: /(comedy)|(adventure)/i } }.freeze
+               day:     { genres: /(comedy)|(adventure)/i },
+               evening: { genres: /(drama)|(horror)/i }}.freeze
 
-  SCHEDULE = { morning: ('09:00'..'14:00'),
-               day:     ('14:00'..'19:00'),
-               evening: ('19:00'..'23:00') }.freeze
+  SCHEDULE = { morning: ('09:00'...'14:00'),
+               day:     ('14:00'...'19:00'),
+               evening: ('19:00'...'23:00') }.freeze
 
   def when?(movie_title)
     movie = movies_collection.filter(title: movie_title).first
