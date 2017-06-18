@@ -1,3 +1,4 @@
+require 'spec_helper'
 describe Theater do
   let(:movies) do
     [
