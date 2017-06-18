@@ -31,7 +31,7 @@ describe Netflix do
     before { netflix.pay(25) }
     subject { netflix.show(genre: 'Romance', period: :classic) }
     it 'shows movie' do
-      expect { print subject }.to output("Now showing: Roman Holiday #{Time.now.strftime('%H:%M')} - #{(Time.now + (90 * 60)).strftime('%H:%M')}").to_stdout
+      expect(subject).to eq("Now showing: Roman Holiday #{Time.now.strftime('%H:%M')} - #{(Time.now + (90 * 60)).strftime('%H:%M')}")
     end
     it 'changes balance on ticket price amount' do
       expect { subject }.to change { netflix.balance }.from(25).to(21)
