@@ -30,8 +30,7 @@ describe Theater do
   end
 
   context 'want to know when can see movie'
-
-  context 'when movie can be seen'
+    context 'when movie can be seen'
   [
     ['The General', :morning], # :ancient action,adventure,comedy
     ['The Kid', :evening], # :ancient but comedy,drama,family
@@ -41,16 +40,17 @@ describe Theater do
     ['The Thing', :evening], # horror
     ['Rocky', :evening] # drama
   ].each do |title, time|
-    it "#when? movie'#{title}'" do
+    it "#when? for #{time} movie'#{title}'" do
       expect(theater.when?(title)).to eq(theater.schedule[time].first)
     end
+  end
 
     context 'when movie is not found'
     # 'The Terminator', genres: action,sci-fi
-    it "#when? movie'#{title}'" do
+    it '#when? returns message when movie is not found' do
       expect(theater.when?('The Terminator')).to eq('Not found')
     end
-  end
+
 
   context 'theater is open' do
     it '#show movie according to selected time: morning' do
@@ -81,7 +81,7 @@ describe Theater do
 
   context 'theater is closed or no movies for selected time' do
     %w[07:00 12:00 00:00].each do |time|
-      it '#show movie according to selected time' do
+      it "#show movie according to selected time: #{time}" do
         expect(theater.show(time)).to eq('No movies for this time')
       end
     end
