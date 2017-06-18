@@ -5,4 +5,4 @@ rvm:
 script:
   - gem install bundler
   - bundle install
-  - rspec --format doc
+  - rspec
