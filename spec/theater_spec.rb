@@ -1,14 +1,14 @@
 describe Theater do
   let(:movies) do
     [
-      { title: 'The Terminator', year: 2000, genre: 'Action,Sci-Fi', rating: 8.2, duration: '90min' },
-      { title: 'The General', year: 1921, genre: 'Action,Adventure,Comedy', rating: 8.2 },
-      { title: 'The Kid', year: 1921, genre: 'Comedy,Drama,Family', rating: 8.2, duration: '90min' },
-      { title: 'The Wolf of Wall Street', year: 2000, genre: 'Comedy,Crime', rating: 8.2, duration: '90min' },
-      { title: 'Nausicaä of the Valley of the Wind', year: 2000, genre: 'Adventure,Fantasy', rating: 8.2, duration: '90min' },
-      { title: '3 Idiots', year: 2000, genre: 'Comedy,Drama', rating: 8.2, duration: '90min' },
-      { title: 'The Thing', year: 1982, genre: 'Horror', rating: 8.2, duration: '90min' },
-      { title: 'Rocky', year: 2000, genre: 'Drama', rating: 8.2, duration: '90min' }
+      { title: 'The Terminator', year: 2000, genre: 'Action,Sci-Fi', rating: 8.2, duration: '90min', actors: ''  },
+      { title: 'The General', year: 1921, genre: 'Action,Adventure,Comedy', rating: 8.2, actors: '' },
+      { title: 'The Kid', year: 1921, genre: 'Comedy,Drama,Family', rating: 8.2, duration: '90min', actors: '' },
+      { title: 'The Wolf of Wall Street', year: 2000, genre: 'Comedy,Crime', rating: 8.2, duration: '90min', actors: '' },
+      { title: 'Nausicaä of the Valley of the Wind', year: 2000, genre: 'Adventure,Fantasy', rating: 8.2, duration: '90min', actors: '' },
+      { title: '3 Idiots', year: 2000, genre: 'Comedy,Drama', rating: 8.2, duration: '90min', actors: '' },
+      { title: 'The Thing', year: 1982, genre: 'Horror', rating: 8.2, duration: '90min', actors: '' },
+      { title: 'Rocky', year: 2000, genre: 'Drama', rating: 8.2, duration: '90min', actors: '' }
     ]
   end
 

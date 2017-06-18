@@ -19,6 +19,10 @@ class Theater < BaseTheater
     schedule[time].first
   end
 
+  def start_time(movie)
+    Time.parse(when?(movie.title))
+  end
+
   def filters
     @filters || FILTERS
   end

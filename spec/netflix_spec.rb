@@ -1,6 +1,6 @@
 describe Netflix do
-  let(:old_romance_comedy) { { title: 'Roman Holiday', year: 1953, genre: 'Comedy,Romance', ticket_price: 4, rating: 8.2, duration: 90 } }
-  let(:new_drama_comedy) { { title: 'Roman Holiday (new)', year: 2000, genre: 'Comedy,Drama', ticket_price: 4, rating: 8.2, duration: 120 } }
+  let(:old_romance_comedy) { { title: 'Roman Holiday', year: 1953, genre: 'Comedy,Romance', ticket_price: 4, rating: 8.2, duration: 90, actors: 'Gregory Peck,Audrey Hepburn,Eddie Albert' } }
+  let(:new_drama_comedy) { { title: 'Roman Holiday (new)', year: 2000, genre: 'Comedy,Drama', ticket_price: 4, rating: 8.2, duration: 120, actors: '' } }
   let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: [old_romance_comedy, new_drama_comedy]) }
   let(:netflix) { Netflix.new(movies_collection: collection) }
 
@@ -15,15 +15,7 @@ describe Netflix do
     subject { netflix.show(title: 'Roman Holiday') }
     it 'raise exception if not enough money' do
       expect { subject }.to raise_error(Netflix::AccountBalanceError, 'Not enough balance for Netflix')
-    end
-    it 'NOT changes balance if not not enough money' do
-      expect do
-        begin
-             subject
-           rescue
-             Netflix::AccountBalanceError
-           end
-      end.not_to change(netflix, :balance)
+                        .and avoid_changing(netflix, :balance)
     end
   end
 
@@ -43,10 +35,9 @@ describe Netflix do
     subject { netflix.show(title: 'Not Found') }
     it 'raise exception if no movie' do
       expect { subject }.to raise_error(Netflix::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
+                        .and avoid_changing(netflix, :balance)
     end
-    it 'should not change balance if no movie' do
-      expect{ subject rescue Netflix::MovieSearchError}.not_to change { netflix.balance }
-    end
+
   end
 
   context 'with multiple search results' do

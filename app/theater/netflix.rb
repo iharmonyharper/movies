@@ -14,6 +14,10 @@ class Netflix < BaseTheater
     end
   end
 
+  def start_time(movie)
+    Time.now
+  end
+
   def pay(amount)
     raise(PaymentError, 'Invalid payment operation') if amount.negative?
     @balance += amount

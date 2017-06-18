@@ -26,19 +26,11 @@ class Movie
     @year = args[:year].to_i
     @country = args[:country]
     @date = args[:date]
-    @genre = begin
-               args[:genre].split(/\s{0},\s{0}/)
-             rescue
-               [args[:genre]]
-             end
+    @genre = args[:genre].split(/\s*,\s*/)
     @duration = args[:duration]
     @rating = args[:rating]
     @director = args[:director]
-    @actors = begin
-                args[:actors].split(/\s{0},\s{0}/)
-              rescue
-                [args[:actors]]
-              end
+    @actors = args[:actors].split(/\s*,\s*/)
     @ticket_price = args[:ticket_price]
     @movies_collection = movies_collection
   end
@@ -63,7 +55,7 @@ class Movie
   end
 
   def period
-    self.class.to_s.split('Movie').first.downcase.to_sym
+    self.class.name.sub('Movie', '').downcase.to_sym
   end
 
   def ticket_price

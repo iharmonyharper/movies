@@ -15,8 +15,7 @@ class BaseTheater
     movie ||= random_movie(movies_collection.filter(**filter))
     raise(MovieSearchError, "No results for '#{filter}'") unless movie
     yield(movie) if block_given?
-    time = Time.now if /netflix/i === self.class.name
-    time = Time.parse(when?(movie.title)) if /theater/i === self.class.name
+    time = start_time(movie)
     if movie.duration
       "Now showing: #{movie.title} #{time.strftime('%H:%M')} - #{(time + (movie.duration.to_i * 60)).strftime('%H:%M')}"
     else
