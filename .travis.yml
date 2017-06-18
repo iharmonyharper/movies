@@ -3,5 +3,6 @@ rvm:
   - 2.4.1
 
 script:
+  - echo pwd
   - bundle install
   - rspec spec --format doc
