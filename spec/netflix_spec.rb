@@ -1,4 +1,3 @@
-require 'spec_helper'
 describe Netflix do
   let(:old_romance_comedy) { { title: 'Roman Holiday', year: 1953, genre: 'Comedy,Romance', ticket_price: 4, rating: 8.2, duration: 90, actors: 'Gregory Peck,Audrey Hepburn,Eddie Albert' } }
   let(:new_drama_comedy) { { title: 'Roman Holiday (new)', year: 2000, genre: 'Comedy,Drama', ticket_price: 4, rating: 8.2, duration: 120, actors: '' } }

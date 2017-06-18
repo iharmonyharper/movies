@@ -1,4 +1,3 @@
-require 'spec_helper'
 describe 'Demo on data from csv' do
   let(:movies) do
     data = CsvToHashConverter.new(file_name: 'movies.txt', headers: HEADERS).data
