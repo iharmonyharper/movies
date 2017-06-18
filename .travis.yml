@@ -3,6 +3,7 @@ rvm:
   - 2.4.1
 
 script:
-  - echo pwd
+  - pwd
+  - cd movies
   - bundle install
   - rspec spec --format doc
