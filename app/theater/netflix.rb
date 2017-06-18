@@ -8,12 +8,6 @@ class Netflix < BaseTheater
     @balance = 0
   end
 
-  def when?(movie_title)
-    movie = movies_collection.filter(title: movie_title).first
-    return 'Not found' unless movie
-    Time.now
-  end
-
   def show(**filter)
     super do |movie|
       withdraw(movie.ticket_price)

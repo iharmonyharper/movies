@@ -5,7 +5,7 @@ class Theater < BaseTheater
 
   FILTERS = {  morning: { period: :ancient },
                day:     { genres: /(comedy)|(adventure)/i },
-               evening: { genres: /(drama)|(horror)/i }}.freeze
+               evening: { genres: /(drama)|(horror)/i } }.freeze
 
   SCHEDULE = { morning: ('09:00'...'14:00'),
                day:     ('14:00'...'19:00'),
@@ -14,9 +14,7 @@ class Theater < BaseTheater
   def when?(movie_title)
     movie = movies_collection.filter(title: movie_title).first
     return 'Not found' unless movie
-    time, = filters.detect do |_, filter|
-      movie.matches?(**filter)
-    end
+    time, = filters.detect { |_, filter| movie.matches?(**filter)}
     return 'Not found' unless time
     schedule[time].first
   end
@@ -30,13 +28,7 @@ class Theater < BaseTheater
   end
 
   def show(time)
-    t, = schedule.detect do |_time, time_range|
-      begin
-        time_range.cover? time
-      rescue
-        nil
-      end
-    end
+    t, = schedule.detect {|_time, time_range| time_range.cover? time }
     return 'No movies for this time' unless t
     super(nil, **filters[t])
   end

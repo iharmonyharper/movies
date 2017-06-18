@@ -44,7 +44,7 @@ class Movie
   end
 
   def self.build(movies_collection: [], data: {})
-    movie_class = Movie.movies_catalog.detect do |_k, v|
+    movie_class = Movie::MOVIES_CATALOG.detect do |_k, v|
       v[:year].cover?(data[:year].to_i)
     end.first
     Object.const_get(movie_class).new(movies_collection: movies_collection, **data)
@@ -67,7 +67,7 @@ class Movie
   end
 
   def ticket_price
-    @ticket_price || Movie.movies_catalog[self.class.to_s][:ticket_price]
+    @ticket_price || MOVIES_CATALOG[self.class.to_s][:ticket_price]
   end
 
   def premier_month
@@ -105,10 +105,6 @@ class Movie
 
   def exclude?(**filter)
     !matches?(**filter)
-  end
-
-  def self.movies_catalog
-    MOVIES_CATALOG
   end
 
   def pretty_print
