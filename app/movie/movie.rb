@@ -1,5 +1,4 @@
-require 'date'
-require 'json'
+module Movies
 
 class Movie
   attr_reader :movies_collection,
@@ -39,7 +38,7 @@ class Movie
     movie_class = Movie::MOVIES_CATALOG.detect do |_k, v|
       v[:year].cover?(data[:year].to_i)
     end.first
-    Object.const_get(movie_class).new(movies_collection: movies_collection, **data)
+    Object.const_get(self.name.split('::').first).const_get(movie_class).new(movies_collection: movies_collection, **data)
   end
 
   def genres
@@ -55,11 +54,11 @@ class Movie
   end
 
   def period
-    self.class.name.sub('Movie', '').downcase.to_sym
+    self.class.name.split('::').last.sub('Movie', '').downcase.to_sym
   end
 
   def ticket_price
-    @ticket_price || MOVIES_CATALOG[self.class.to_s][:ticket_price]
+    @ticket_price || MOVIES_CATALOG[self.class.name.split('::').last][:ticket_price]
   end
 
   def premier_month
@@ -111,4 +110,5 @@ class Movie
     asterisk_number = ((rating - 8.0).round(1) * 10)
     asterisk_number > 0 ? '*' * asterisk_number : '*'
   end
+end
 end

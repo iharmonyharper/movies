@@ -1,4 +1,4 @@
-require_relative 'base_theater'
+module Theaters
 
 class Theater < BaseTheater
   attr_accessor :schedule, :filters
@@ -37,3 +37,5 @@ class Theater < BaseTheater
     super(nil, **filters[t])
   end
 end
+end
+

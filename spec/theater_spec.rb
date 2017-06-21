@@ -1,4 +1,5 @@
-describe Theater do
+module Cinematic
+describe Theaters::Theater do
   let(:movies) do
     [
       { title: 'The Terminator', year: 2000, genre: 'Action,Sci-Fi', rating: 8.2, duration: '90min', actors: ''  },
@@ -12,7 +13,7 @@ describe Theater do
     ]
   end
 
-  let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: movies) }
+  let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: movies, movie_class: Movies::Movie) }
   let(:theater) { Theater.new(movies_collection: collection) }
 
   before do
@@ -86,4 +87,5 @@ describe Theater do
       end
     end
   end
+end
 end

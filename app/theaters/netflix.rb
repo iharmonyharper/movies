@@ -1,4 +1,5 @@
-require_relative 'base_theater'
+module Theaters
+
 
 class Netflix < BaseTheater
   attr_reader :balance
@@ -34,4 +35,5 @@ class Netflix < BaseTheater
     raise(AccountBalanceError, "Not enough balance for #{self.class}") if (@balance - amount).negative?
     @balance -= amount
   end
+end
 end

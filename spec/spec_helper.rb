@@ -1,17 +1,6 @@
 RSpec::Matchers.define_negated_matcher :avoid_changing, :change
-require_relative '../app/theater/base_theater'
-require_relative '../app/theater/netflix'
-require_relative '../app/theater/theater'
-
-require_relative '../app/movie/movie'
-require_relative '../app/movie/movie'
-require_relative '../app/movie/ancient_movie'
-require_relative '../app/movie/modern_movie'
-require_relative '../app/movie/classic_movie'
-require_relative '../app/movie/new_movie'
-
-require_relative '../app/movie_collection'
-require_relative '../helpers/csv_to_hash_converter'
+require_relative '../app/cinematic'
+# require_relative '../helpers/csv_to_hash_converter'
 
 HEADERS = %i[link title year country date genre duration rating director actors].freeze
 

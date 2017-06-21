@@ -1,7 +1,8 @@
-describe Netflix do
+module Cinematic
+describe Theaters::Netflix do
   let(:old_romance_comedy) { { title: 'Roman Holiday', year: 1953, genre: 'Comedy,Romance', ticket_price: 4, rating: 8.2, duration: 90, actors: 'Gregory Peck,Audrey Hepburn,Eddie Albert' } }
   let(:new_drama_comedy) { { title: 'Roman Holiday (new)', year: 2000, genre: 'Comedy,Drama', ticket_price: 4, rating: 8.2, duration: 120, actors: '' } }
-  let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: [old_romance_comedy, new_drama_comedy]) }
+  let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: [old_romance_comedy, new_drama_comedy], movie_class: Movies::Movie) }
   let(:netflix) { Netflix.new(movies_collection: collection) }
 
   context '#pay' do
@@ -14,7 +15,7 @@ describe Netflix do
   context 'not enough money to #pay' do
     subject { netflix.show(title: 'Roman Holiday') }
     it 'raise exception if not enough money' do
-      expect { subject }.to raise_error(Netflix::AccountBalanceError, 'Not enough balance for Netflix')
+      expect { subject }.to raise_error(Netflix::AccountBalanceError, 'Not enough balance for Theaters::Netflix')
                         .and avoid_changing(netflix, :balance)
     end
   end
@@ -34,7 +35,7 @@ describe Netflix do
     before { netflix.pay(25) }
     subject { netflix.show(title: 'Not Found') }
     it 'raise exception if no movie' do
-      expect { subject }.to raise_error(Netflix::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
+      expect { subject }.to raise_error(Theaters::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
                         .and avoid_changing(netflix, :balance)
     end
 
@@ -66,3 +67,5 @@ describe Netflix do
     end
   end
 end
+end
+

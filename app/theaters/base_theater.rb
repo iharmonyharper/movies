@@ -1,5 +1,4 @@
-require_relative '../movie_collection'
-require 'time'
+module Theaters
 
 class MovieSearchError < StandardError
 end
@@ -32,4 +31,5 @@ class BaseTheater
   def random_movie(movies)
     movies.sort_by { |m| m.rating * rand }.last
   end
+end
 end

@@ -1,11 +1,13 @@
+module Cinematic
 require 'date'
 
 class MovieCollection
   attr_reader :title, :collection, :collection_raw_data
 
-  def initialize(title: 'new_collection', collection_raw_data: [])
+  def initialize(title: 'new_collection', collection_raw_data: [], movie_class:)
     @collection_raw_data = collection_raw_data
     @title = title
+    @movie_class = movie_class
     @collection = get_movies
   end
 
@@ -15,7 +17,7 @@ class MovieCollection
 
   def get_movies
     @collection_raw_data.map do |data|
-      Movie.build(movies_collection: self, data: data)
+      @movie_class.build(movies_collection: self, data: data)
     end
   end
 
@@ -65,3 +67,6 @@ class MovieCollection
        .sort_by(&:first)
   end
 end
+end
+
+
