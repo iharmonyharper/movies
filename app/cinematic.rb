@@ -5,7 +5,10 @@ require_relative 'movie_collection'
 require_relative '../helpers/csv_to_hash_converter'
 
 module Cinematic
-  include Cashbox
   include Movies
   include Theaters
+  Theaters::Netflix.extend(Cashbox)
+  Theaters::Theater.include(Cashbox)
+
+
 end
