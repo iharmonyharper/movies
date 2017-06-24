@@ -19,7 +19,6 @@ class Netflix < BaseTheater
   end
 
   def pay(amount)
-
     amount = Money.from_amount(amount) unless Money === amount
     raise(PaymentError, 'Invalid payment operation') if amount.negative?
     @balance += amount

@@ -4,6 +4,8 @@ require 'date'
 class MovieCollection
   attr_reader :title, :collection, :collection_raw_data
 
+  include Enumerable
+
   def initialize(title: 'new_collection', collection_raw_data: [], movie_class:)
     @collection_raw_data = collection_raw_data
     @title = title
@@ -50,6 +52,12 @@ class MovieCollection
     else
       statistics(field).map { |k, v| [k, param ? v.send(param) : v] }.to_h
     end
+  end
+
+  def <=>(other)
+    return 1 if self.title > other.title
+    return -1 if self.title < other.title
+    return 0 if self.title == other.title
   end
 
   private

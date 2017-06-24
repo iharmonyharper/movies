@@ -14,6 +14,8 @@ class Movie
               :actors,
               :ticket_price
 
+  include Enumerable
+
   MOVIES_CATALOG = { 'AncientMovie' => { ticket_price: 1.00, period: :ancient, year: (1900...1945) },
                      'ClassicMovie' => { ticket_price: 1.50, period: :classic, year: (1945...1968) },
                      'ModernMovie' => { ticket_price: 3.00, period: :modern, year: (1968...2000) },
@@ -103,6 +105,13 @@ class Movie
   end
 
   alias inspect pretty_print
+
+
+  def <=>(other)
+    return 1 if self.title > other.title
+    return -1 if self.title < other.title
+    return 0 if self.title == other.title
+  end
 
   private
 
