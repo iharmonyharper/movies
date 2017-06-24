@@ -15,6 +15,7 @@ describe Theaters::Theater do
 
   let(:collection) { MovieCollection.new(title: 'TestCollection', collection_raw_data: movies, movie_class: Movies::Movie) }
   let(:theater) { Theater.new(movies_collection: collection) }
+  let(:theater_new) { Theater.new(movies_collection: collection) }
 
   before do
     theater.filters = { morning: { period: :ancient,
@@ -86,6 +87,27 @@ describe Theaters::Theater do
         expect(theater.show(time)).to eq('No movies for this time')
       end
     end
+  end
+
+  context '#buy_ticket'
+  let(:old_balance) {theater.cash}
+  context 'buy ticket - morning'
+  let(:morning_price) { Money.from_amount(3, :USD)}
+  it 'pay morning price' do
+    expect{theater.buy_ticket(time:'10:00', movie_title:'The General')}.to output("вы купили билет на The General\n").to_stdout.
+                                                                                                                                   and change(theater, :cash).from(old_balance).to(old_balance + morning_price)
+  end
+  context 'buy ticket - day'
+  let(:day_price) { Money.from_amount(5, :USD)}
+  it 'pay day price' do
+    expect{theater.buy_ticket(time:'16:00', movie_title:'The Wolf of Wall Street')}.to output("вы купили билет на The Wolf of Wall Street\n").to_stdout.
+        and change(theater, :cash).from(old_balance).to(old_balance + day_price)
+  end
+  context 'buy ticket - evening'
+  let(:evening_price) { Money.from_amount(10, :USD)}
+  it 'pay day price' do
+    expect{theater.buy_ticket(time:'19:00', movie_title:'The Thing')}.to output("вы купили билет на The Thing\n").to_stdout.
+        and change(theater, :cash).from(old_balance).to(old_balance + evening_price)
   end
 end
 end
