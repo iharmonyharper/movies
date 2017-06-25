@@ -1,4 +1,8 @@
 module Cashbox
+
+  class EncashmentError < StandardError
+  end
+
   require 'money'
   I18n.enforce_available_locales = false
 
@@ -11,7 +15,7 @@ module Cashbox
   alias :money :cash
 
   def take(who)
-    raise unless who == 'Bank'
+    raise(EncashmentError, 'Вызывает полицию') unless who == 'Bank'
     puts 'Проведена инкассация'
     self.money = Money.from_amount(0)
   end

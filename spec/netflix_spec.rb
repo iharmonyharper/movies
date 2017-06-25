@@ -34,7 +34,7 @@ module Cinematic
     it 'raise exception' do
       netflix.pay(usd_25)
       netflix_new.pay(usd_25)
-      expect { Netflix.take('not bank') }.to raise_error(RuntimeError).and avoid_changing(Netflix, :cash)
+      expect { Netflix.take('not bank') }.to raise_error(Cashbox::EncashmentError, 'Вызывает полицию').and avoid_changing(Netflix, :cash)
     end
 
 
