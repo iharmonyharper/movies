@@ -96,7 +96,6 @@ module Cinematic
       context 'when taken by unauthorized' do
         let(:who) {'not bank'}
         it 'raise exception' do
-          netflix_new.pay(usd_25)
           expect {subject}.to raise_error(Cashbox::EncashmentError, 'Вызывает полицию').and avoid_changing(Netflix, :cash)
         end
       end
