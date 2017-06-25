@@ -54,6 +54,7 @@ module Cinematic
       end
       it 'changes balance on ticket price amount' do
         expect {subject}.to change {netflix.balance}.from(Money.from_amount(25)).to(Money.from_amount(21))
+                                .and avoid_changing(Netflix, :money)
       end
     end
 

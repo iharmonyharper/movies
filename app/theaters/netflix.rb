@@ -36,7 +36,6 @@ class Netflix < BaseTheater
     amount = Money.from_amount(amount)
     raise(AccountBalanceError, "Not enough balance for #{self.class}") if (@balance - amount).negative?
     @balance -= amount
-    Netflix.subtract_balance(amount)
   end
 end
 end
