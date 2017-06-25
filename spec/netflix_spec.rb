@@ -9,40 +9,26 @@ module Cinematic
     let(:usd_21) {Money.from_amount(21, :USD)}
 
     context '#pay' do
-      it 'changes balance if payment' do
-        old_balance = Netflix.cash
-        old_instance_balance = netflix.balance
-        expect {netflix.pay(usd_25)}.to change {netflix.balance}.from(old_instance_balance).to(old_instance_balance + usd_25)
+      let(:old_balance) {Netflix.cash}
+      let(:old_instance_balance) {netflix.balance}
+      subject {netflix.pay(usd_25)}
+      it 'changes instance balance if payment' do
+        expect {subject}.to change {netflix.balance}.from(old_instance_balance).to(old_instance_balance + usd_25)
       end
 
       it 'changes common cashbox balance if payment' do
-        old_balance = Netflix.cash
-        expect {netflix.pay(usd_25)}.to change {Netflix.cash}.from(old_balance)
-                                            .to(old_balance + usd_25)
+        expect {subject}.to change {Netflix.cash}.from(old_balance)
+                                .to(old_balance + usd_25)
       end
-    end
-
-    context '#take'
-    context '#taken by Bank'
-
-    it 'reset cashbox balance to 0' do
-      old_balance = Netflix.cash
-      netflix_new.pay(usd_25)
-      expect {Netflix.take('Bank')}.to change {Netflix.cash}.from(old_balance + usd_25).to(0)
-    end
-    context '#taken by unauthorized'
-    it 'raise exception' do
-      netflix.pay(usd_25)
-      netflix_new.pay(usd_25)
-      expect { Netflix.take('not bank') }.to raise_error(Cashbox::EncashmentError, 'Вызывает полицию').and avoid_changing(Netflix, :cash)
-    end
 
 
-    context 'not enough money to #pay' do
-      subject {netflix.show(title: 'Roman Holiday')}
-      it 'raise exception if not enough money' do
-        expect {subject}.to raise_error(Netflix::AccountBalanceError, 'Not enough balance for Theaters::Netflix')
-                                .and avoid_changing(netflix, :balance)
+      context 'not enough money to #pay' do
+        subject {netflix.show(title: 'Roman Holiday')}
+        it 'raise exception if not enough money' do
+          expect {subject}.to raise_error(Netflix::AccountBalanceError, 'Not enough balance for Theaters::Netflix')
+                                  .and avoid_changing(netflix, :balance)
+                                           .and avoid_changing(Netflix, :cash)
+        end
       end
     end
 
@@ -91,6 +77,28 @@ module Cinematic
       end
       it 'changes balance on ticket price amount' do
         expect {subject}.to change {netflix.balance}.from(usd_25).to(usd_21)
+      end
+    end
+
+    context '#take' do
+      before {
+        netflix_new.pay(usd_25)
+      }
+      let(:old_balance) {Netflix.cash}
+      subject {Netflix.take(who)}
+      context 'when taken by Bank' do
+        let(:who) {'Bank'}
+        it 'reset cashbox balance to 0' do
+          expect {subject}.to change {Netflix.cash}.from(old_balance).to(0)
+        end
+      end
+
+      context 'when taken by unauthorized' do
+        let(:who) {'not bank'}
+        it 'raise exception' do
+          netflix_new.pay(usd_25)
+          expect {subject}.to raise_error(Cashbox::EncashmentError, 'Вызывает полицию').and avoid_changing(Netflix, :cash)
+        end
       end
     end
   end
