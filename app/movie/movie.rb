@@ -108,9 +108,7 @@ class Movie
 
 
   def <=>(other)
-    return 1 if self.title > other.title
-    return -1 if self.title < other.title
-    return 0 if self.title == other.title
+    self.title <=> other.title
   end
 
   private

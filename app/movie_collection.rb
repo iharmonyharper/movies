@@ -54,12 +54,6 @@ class MovieCollection
     end
   end
 
-  def <=>(other)
-    return 1 if self.title > other.title
-    return -1 if self.title < other.title
-    return 0 if self.title == other.title
-  end
-
   private
 
   def statistics(field)
