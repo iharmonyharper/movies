@@ -4,8 +4,6 @@ require 'date'
 class MovieCollection
   attr_reader :title, :collection, :collection_raw_data
 
-  include Enumerable
-
   def initialize(title: 'new_collection', collection_raw_data: [], movie_class:)
     @collection_raw_data = collection_raw_data
     @title = title
