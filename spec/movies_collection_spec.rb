@@ -16,7 +16,7 @@ module Cinematic
     let(:collection) {MovieCollection.new(title: 'TestCollection', collection_raw_data: movies, movie_class: Movies::Movie)}
 
     context "#map" do
-      subject {collection.all.map(&block)}
+      subject {collection.map(&block)}
       let(:block) {:title}
       it '#map simple' do
         expect(subject).to eq(movies.map {|h| h[:title]})
@@ -28,7 +28,7 @@ module Cinematic
     end
 
     context '#sort' do
-      subject {collection.all.sort}
+      subject {collection.sort}
       it 'sorts collection' do
         expect(subject.map(&:title)).to eq(['3 Idiots',
                                             'Nausicaä of the Valley of the Wind',
@@ -43,7 +43,7 @@ module Cinematic
 
 
     context '#select' do
-      subject {collection.all.select(&block)}
+      subject {collection.select(&block)}
       let(:block) {Proc.new {|x| x.year.even?}}
       it '#select with block' do
         expect(subject.count).to eq(6)
@@ -51,7 +51,7 @@ module Cinematic
     end
 
     context '#reject' do
-      subject {collection.all.reject(&block)}
+      subject {collection.reject(&block)}
       let(:block) {Proc.new {|x| x.year.even?}}
       it '#reject with block' do
         expect(subject.count).to eq(2)
@@ -59,7 +59,7 @@ module Cinematic
     end
 
     context '#count' do
-      subject {collection.all.count(&block)}
+      subject {collection.count(&block)}
       let(:block) {Proc.new {|x| x.year.even?}}
       it '#count with block' do
         expect(subject).to eq(6)
@@ -67,7 +67,7 @@ module Cinematic
     end
 
     context '#reduce' do
-      subject {collection.all.reduce(0, &block)}
+      subject {collection.reduce(0, &block)}
       let(:block) {Proc.new {|sum, x| sum += x.year}}
       it 'return sum of years' do
         expect(subject).to eq(15824)
