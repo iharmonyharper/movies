@@ -1,12 +1,18 @@
+module Cinematic
 describe 'Demo on data from csv' do
   let(:movies) do
     data = CsvToHashConverter.new(file_name: 'movies.txt', headers: HEADERS).data
-    MovieCollection.new(title: 'My collection', collection_raw_data: data)
+    MovieCollection.new(title: 'My collection', collection_raw_data: data, movie_class: Movies::Movie)
+  end
+  let(:movies_new) do
+    data = CsvToHashConverter.new(file_name: 'movies.txt', headers: HEADERS).data
+    MovieCollection.new(title: 'My collection', collection_raw_data: data, movie_class: Movies::Movie)
   end
   let(:movie) { movies.filter(title: 'The Terminator').first }
-  let(:netflix) { Netflix.new(movies_collection: movies) }
-  let(:theater) { Theater.new(movies_collection: movies) }
-  let(:base_theater) { BaseTheater.new(movies_collection: movies) }
+  let(:movie_new) { movies.filter(title: 'The General').last }
+  let(:netflix) { Theaters::Netflix.new(movies_collection: movies) }
+  let(:theater) { Theaters::Theater.new(movies_collection: movies) }
+  let(:base_theater) { Theaters::BaseTheater.new(movies_collection: movies) }
   let(:ticket_price) { 3.00 }
   let(:money) { 25.00 }
 
@@ -29,3 +35,5 @@ describe 'Demo on data from csv' do
     end
   end
 end
+end
+
