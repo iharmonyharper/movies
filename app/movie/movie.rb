@@ -91,13 +91,13 @@ module Movies
         if f == :exclude?
           exclude?(**value)
         else
-          value === send(f)
+          match_filters?(f, value)
         end
       end
     end
 
     def exclude?(**filter)
-      !matches?(**filter)
+      !filter.any? { |f, value| match_filters?(f, value) }
     end
 
     def pretty_print
@@ -112,6 +112,10 @@ module Movies
     end
 
     private
+
+    def match_filters?(f, value)
+      value === send(f) || (Array === send(f) ? send(f).include?(value.to_s) : false)
+    end
 
     def calculate_rating
       asterisk_number = ((rating - 8.0).round(1) * 10)

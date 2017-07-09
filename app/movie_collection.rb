@@ -32,16 +32,10 @@ class MovieCollection
   end
 
   def filter(**fields)
-    fields.reduce(all) do |filtered, (k, v)|
-      filtered.select do |m|
-        (v.is_a?(Range) ? Array[v] : Array[*v]).all? do |value|
-          if k == :exclude?
-            m.exclude?(value.first => value.last)
-          else
-            Array[*m.send(k)].any? { |item| value === item }
-           end
-        end
-      end
+    reduce(all) do |filtered, _|
+      filtered.select{ |m|
+        m.matches?(fields)
+      }
     end
   end
 
