@@ -1,5 +1,4 @@
 module Cashbox
-
   class EncashmentError < StandardError
   end
 
@@ -12,7 +11,7 @@ module Cashbox
     @money || Money.from_amount(0)
   end
 
-  alias :money :cash
+  alias money cash
 
   def take(who)
     raise(EncashmentError, 'Вызывает полицию') unless who == 'Bank'
@@ -27,5 +26,4 @@ module Cashbox
   def subtract_balance(amount)
     self.money -= amount if amount.positive?
   end
-
 end

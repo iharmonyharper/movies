@@ -26,8 +26,42 @@ describe 'Demo on data from csv' do
     movie_duration = '67 min'.to_i * 60
     start_time = t.strftime('%H:%M')
     end_time = (t + movie_duration).strftime('%H:%M')
-    expect(netflix.show(title: 'The General')).to match(/Now showing: The General #{start_time} - #{end_time}/)
+    expect(netflix.show(title: 'The General', period: :ancient)).to match(/Now showing: The General #{start_time} - #{end_time}/)
   end
+
+  it 'netflix #show with block in filter' do
+    netflix.pay(money)
+    a=netflix.show { |movie| !movie.title.include?('Terminator') && movie.genre.include?('Action') && movie.year > 2003}
+    expected_movies = movies.select{ |movie| !movie.title.include?('Terminator') && movie.genre.include?('Action') && movie.year > 2003}
+    expect(expected_movies.map(&:title).any? {|t| a.match(t)}).to be_truthy
+  end
+
+  it 'netflix #define custom filter' do
+    netflix.pay(money)
+    netflix.define_filter(:new_sci_fi) { {genre: 'Sci-Fi', period: :modern } }
+    netflix.custom_filters
+    expect(netflix.show(new_sci_fi: true, title: /Terminator/){ |movie| movie.title.include?('Terminator')})
+        .to match('Now showing: The Terminator ')
+
+  end
+
+  it 'netflix #define custom filter with additional params' do
+    netflix.pay(3.00)
+    netflix.define_filter(:new_sci_fi) { |movie, year| movie.year > year && movie.genre.include?('Sci-Fi')}
+    netflix.custom_filters
+    expect(netflix.show(new_sci_fi: 1985, actors: 'Arnold Schwarzenegger'))
+        .to match('Now showing: Terminator 2: Judgment Day ') { |movie| movie.title.include?('Terminator')}
+  end
+
+
+  it 'netflix #define custom filter from another filter with additional parameter' do
+    netflix.pay(money)
+    netflix.define_filter(:new_sci_fi) { |movie, year| movie.year > year && movie.genre.include?('Sci-Fi')}
+    netflix.define_filter(:newest_sci_fi, from: :new_sci_fi, arg: 2014)
+    expect(netflix.show(newest_sci_fi: true))
+        .to match('Now showing: Mad Max: Fury Road ')
+  end
+
 
   %w[09:00 14:00 19:00].each do |time|
     it "theater #show when #{time}" do
