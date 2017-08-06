@@ -8,12 +8,11 @@ module Theaters
     end
 
     def define_filter(filter_name, from: nil, arg: nil, &block)
-      @custom_filters ||= {}
       if from
-        @custom_filters[filter_name] = @custom_filters[from]
-        @custom_filters["#{filter_name}_arg".to_sym] = arg if arg
+        custom_filters[filter_name] = custom_filters[from]
+        custom_filters[filter_name] = Proc.new{ |x| custom_filters[from].call(x, arg) } if arg
       else
-        @custom_filters[filter_name] = block if block_given?
+        custom_filters[filter_name] = block if block_given?
       end
     end
 
@@ -27,7 +26,6 @@ module Theaters
         filter = default.to_h.merge(custom_f.map(&:call).inject(&:merge).to_h)
         unless custom_proc.empty?
           f_name, f_value = customer.first
-          f_value = custom_filters["#{f_name}_arg".to_sym] || f_value
           block = proc { |x| custom_proc.first.call(x, f_value) } unless block_given?
           block = proc { |x| block.call(x) && custom_proc.first.call(x, f_value) } if block_given?
         end
@@ -60,6 +58,10 @@ module Theaters
       amount = Money.from_amount(amount)
       raise(AccountBalanceError, "Not enough balance for #{self.class}") if (@balance - amount).negative?
       @balance -= amount
+    end
+
+    def custom_filters
+      @custom_filters ||= {}
     end
   end
 end

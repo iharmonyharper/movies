@@ -116,7 +116,8 @@ module Movies
     private
 
     def match_filters?(f, value)
-      value === send(f) || (Array === send(f) ? send(f).include?(value.to_s) : false)
+      v = send(f)
+      value === v || (v.is_a?(Array) && v.include?(value.to_s))
     end
 
     def calculate_rating

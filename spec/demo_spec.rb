@@ -39,7 +39,6 @@ describe 'Demo on data from csv' do
   it 'netflix #define custom filter' do
     netflix.pay(money)
     netflix.define_filter(:new_sci_fi) { {genre: 'Sci-Fi', period: :modern } }
-    netflix.custom_filters
     expect(netflix.show(new_sci_fi: true, title: /Terminator/){ |movie| movie.title.include?('Terminator')})
         .to match('Now showing: The Terminator ')
 
@@ -48,7 +47,6 @@ describe 'Demo on data from csv' do
   it 'netflix #define custom filter with additional params' do
     netflix.pay(3.00)
     netflix.define_filter(:new_sci_fi) { |movie, year| movie.year > year && movie.genre.include?('Sci-Fi')}
-    netflix.custom_filters
     expect(netflix.show(new_sci_fi: 1985, actors: 'Arnold Schwarzenegger'))
         .to match('Now showing: Terminator 2: Judgment Day ') { |movie| movie.title.include?('Terminator')}
   end
