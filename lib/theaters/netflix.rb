@@ -17,20 +17,7 @@ module Theaters
     end
 
     def show(**filter, &block)
-      customer, default = filter.partition do |k, _v|
-        custom_filters.keys.include?(k) if custom_filters
-      end
-      unless customer.empty?
-        custom = custom_filters.select { |k, _v| filter.keys.include?(k) && filter[k] }.values
-        custom_f, custom_proc = custom.partition { |c| c.arity == 0 } if custom
-        filter = default.to_h.merge(custom_f.map(&:call).inject(&:merge).to_h)
-        unless custom_proc.empty?
-          f_name, f_value = customer.first
-          block = proc { |x| custom_proc.first.call(x, f_value) } unless block_given?
-          block = proc { |x| block.call(x) && custom_proc.first.call(x, f_value) } if block_given?
-        end
-      end
-
+      filter, block = get_filter(**filter, &block)
       movie_to_show = find_movies_to_show(filter, &block)
       withdraw(movie_to_show.ticket_price)
       super(movie = movie_to_show)
@@ -63,5 +50,25 @@ module Theaters
     def custom_filters
       @custom_filters ||= {}
     end
+
+
+    def get_filter(**filter, &block)
+      customer, default = filter.partition do |k, _v|
+        custom_filters.keys.include?(k) if custom_filters
+      end
+      unless customer.empty?
+        custom = custom_filters.select { |k, _v| filter.keys.include?(k) && filter[k] }.values
+        custom_filter, custom_proc = custom.partition { |c| c.arity == 0 } if custom
+        filter = default.to_h.merge(custom_filter.map(&:call).inject(&:merge).to_h)
+
+        unless custom_proc.empty?
+          _, f_value = customer.first
+          block = proc { |x| custom_proc.first.call(x, f_value) } unless block_given?
+          block = proc { |x| block.call(x) && custom_proc.first.call(x, f_value) } if block_given?
+        end
+      end
+      [filter, block]
+    end
+
   end
 end
