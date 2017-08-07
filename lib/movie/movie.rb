@@ -80,7 +80,7 @@ module Movies
       nil
     end
 
-    def has_genre?(name)
+    def genre?(name)
       raise("Genre '#{name}' is not found in collection '#{movies_collection.title}'") unless movies_collection.genres.include?(name)
       genre.include?(name)
     end

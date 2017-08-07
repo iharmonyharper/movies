@@ -48,6 +48,6 @@ module Theaters
       raise(MovieSearchError, "No results for '#{filter}'") unless movie
       add_balance(PRICES[t])
       puts "вы купили билет на #{movie.title}"
-      end
+    end
   end
 end
