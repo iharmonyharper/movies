@@ -117,7 +117,7 @@ module Movies
 
     def match_filters?(f, value)
       v = send(f)
-      value === v || (v.is_a?(Array) && v.include?(value.to_s))
+      value === v || (v.is_a?(Array) && v.include?(value.to_s)) # rubocop:disable CaseEquality
     end
 
     def calculate_rating

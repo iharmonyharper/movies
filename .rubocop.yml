@@ -17,12 +17,3 @@ MethodLength:
 
 ClassLength:
   Max: 105
-
-AccessorMethodName:
-   Enabled: false
-
-CaseEquality:
-   Enabled: false
-
-AbcSize:
-  Max: 19

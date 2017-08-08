@@ -10,14 +10,14 @@ module Cinematic
       @collection_raw_data = collection_raw_data
       @title = title
       @movie_class = movie_class
-      @collection = get_movies
+      @collection = create_movies
     end
 
     def all
       @collection
     end
 
-    def get_movies
+    def create_movies
       @collection_raw_data.map do |data|
         @movie_class.build(movies_collection: self, data: data)
       end
