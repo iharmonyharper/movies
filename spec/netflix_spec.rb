@@ -48,7 +48,7 @@ module Cinematic
       before {netflix.pay(usd_25)}
       subject {netflix.show(title: 'Not Found')}
       it 'raise exception if no movie' do
-        expect {subject}.to raise_error(Theaters::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
+        expect {subject}.to raise_error(Theaters::MovieSearchError, 'No results for filter')
                                 .and avoid_changing(netflix, :balance)
       end
 

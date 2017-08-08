@@ -39,7 +39,7 @@ describe 'Demo on data from csv' do
   it 'netflix #define custom filter' do
     netflix.pay(money)
     netflix.define_filter(:new_sci_fi) { {genre: 'Sci-Fi', period: :modern } }
-    expect(netflix.show(new_sci_fi: true, title: /Terminator/){ |movie| movie.title.include?('Terminator')})
+    expect(netflix.show(new_sci_fi: true, title: /The/ ){ |movie| movie.director.include?('Cam')})
         .to match('Now showing: The Terminator ')
 
   end

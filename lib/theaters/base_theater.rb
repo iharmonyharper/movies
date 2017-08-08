@@ -32,6 +32,7 @@ module Theaters
     private
 
     def random_movie(movies)
+      raise(MovieSearchError, 'No results for filter') if movies.empty?
       movies.sort_by { |m| m.rating * rand }.last
     end
   end
