@@ -20,7 +20,7 @@ module Movies
                        'ModernMovie' => { ticket_price: 3.00, period: :modern, year: (1968...2000) },
                        'NewMovie' => { ticket_price: 5.00, period: :new, year: (2000...2100) } }.freeze
 
-    def initialize(movies_collection: [], **args)
+    def initialize(movies_collection: [], **args) # rubocop:disable AbcSize
       @link = args[:link]
       @title = args[:title]
       @year = args[:year].to_i
