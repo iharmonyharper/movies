@@ -53,7 +53,6 @@ module Theaters
       @balance -= amount
     end
 
-
     def apply_filters(**filter, &block)
       custom, default = filter.partition { |k, _v| custom_filters.keys.include?(k) }.map(&:to_h)
       result = movies_collection.filter(default, &block)
