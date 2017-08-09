@@ -7,6 +7,10 @@ module Theaters
       @balance = Money.from_amount(0)
     end
 
+    def custom_filters
+      @custom_filters ||= {}
+    end
+
     def define_filter(filter_name, from: nil, arg: nil, &block)
       custom_filters[filter_name] =
         if from && arg
@@ -19,7 +23,7 @@ module Theaters
     end
 
     def show(**filter, &block)
-      result = get_collection(filter, &block)
+      result = apply_filters(filter, &block)
       movie_to_show = random_movie(result)
       withdraw(movie_to_show.ticket_price)
       super(movie_to_show)
@@ -49,11 +53,8 @@ module Theaters
       @balance -= amount
     end
 
-    def custom_filters
-      @custom_filters ||= {}
-    end
 
-    def get_collection(**filter, &block)
+    def apply_filters(**filter, &block)
       custom, default = filter.partition { |k, _v| custom_filters.keys.include?(k) }.map(&:to_h)
       result = movies_collection.filter(default, &block)
       custom.inject(result) do |res, (name, arg)|
