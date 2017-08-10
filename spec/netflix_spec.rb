@@ -82,7 +82,7 @@ module Cinematic
 
     context 'with custom filters' do
       let(:modern_sci_fi) {{title: 'The Terminator', year: 1984, genre: 'Action,Sci-Fi', ticket_price: 4, rating: 8.1, duration: 107, country: 'UK', director: 'James Cameron', actors: 'Arnold Schwarzenegger,Linda Hamilton,Michael Biehn'}}
-      let(:new_modern_sci_fi) {{title: 'Terminator 2: Judgment Day', year: 1991, genre: 'Action,Sci-Fi', ticket_price: 4, rating: 8.1, duration: 107, country: 'USA', director: 'James Cameron', actors: 'Arnold Schwarzenegger,Linda Hamilton,Michael Biehn'}}
+      let(:new_modern_sci_fi) {{title: 'Terminator 2: Judgment Day', year: 1991, genre: 'Action,Sci-Fi', ticket_price: 4, rating: 9.3, duration: 107, country: 'USA', director: 'James Cameron', actors: 'Arnold Schwarzenegger,Linda Hamilton,Michael Biehn'}}
       let(:newest_modern_sci_fi) {{title: 'Mad Max: Fury Road', year: 2015, genre: 'Action,Adventure,Sci-Fi', ticket_price: 4, rating: 8.1, duration: 107, country: 'USA', director: 'George Miller', actors: 'Tom Hardy,Charlize Theron,Nicholas Houl'}}
 
       let(:collection) {MovieCollection.new(title: 'TestCollection',
@@ -96,17 +96,18 @@ module Cinematic
       before {netflix.pay(usd_25)}
 
       it 'should be a block' do
-        netflix.define_filter(:new_sci_fi) {{genre: 'Sci-Fi', period: :modern}}
-        expect(netflix.custom_filters[:new_sci_fi]).to be_a_kind_of(Proc)
+        expect(netflix.define_filter(:good_sci_fi) { |movie|
+          movie.duration < 120 && movie.genre == 'Drama' || movie.genre == 'Sci-Fi' && movie.rating > 9.2 }
+        ).to be_a_kind_of(Proc)
       end
 
       it 'raises exception when not a block' do
         expect {netflix.define_filter(:new_sci_fi)}.to raise_error('Can`t define filter.')
       end
 
-      context '#define custom filter simple' do
+      context '#define custom filter as simple block' do
         it 'shows movie according to filter' do
-          netflix.define_filter(:new_sci_fi) {{genre: 'Sci-Fi', period: :modern}}
+          netflix.define_filter(:new_sci_fi) {|movie| movie.genre.include?('Sci-Fi') && movie.period == :modern }
           expect(netflix.show(new_sci_fi: true, title: /The/) {|movie| movie.director.include?('Cam')})
               .to match('Now showing: The Terminator ')
         end
@@ -126,6 +127,14 @@ module Cinematic
           netflix.define_filter(:newest_sci_fi, from: :new_sci_fi, arg: 2014)
           expect(netflix.show(newest_sci_fi: true))
               .to match('Now showing: Mad Max: Fury Road ')
+        end
+      end
+
+      context '#define custom filter as simple hash' do
+        it 'shows movie according to filter' do
+          netflix.define_filter(:new_sci_fi) {{genre: 'Sci-Fi', period: :modern}}
+          expect(netflix.show(new_sci_fi: true, title: /The/) {|movie| movie.director.include?('Cam')})
+              .to match('Now showing: The Terminator ')
         end
       end
     end
