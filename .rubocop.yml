@@ -1,0 +1,19 @@
+AllCops:
+  Include:
+    - 'lib/*'
+    - 'helpers/*'
+  Exclude:
+    - 'spec/*'
+    - 'Gemfile'
+
+Documentation:
+  Enabled: false
+
+LineLength:
+  Max: 136
+
+MethodLength:
+  Max: 12
+
+ClassLength:
+  Max: 105

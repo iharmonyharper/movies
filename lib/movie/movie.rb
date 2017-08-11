@@ -1,5 +1,4 @@
 module Movies
-
   class Movie
     attr_reader :movies_collection,
                 :link,
@@ -16,12 +15,12 @@ module Movies
 
     include Enumerable
 
-    MOVIES_CATALOG = {'AncientMovie' => {ticket_price: 1.00, period: :ancient, year: (1900...1945)},
-                      'ClassicMovie' => {ticket_price: 1.50, period: :classic, year: (1945...1968)},
-                      'ModernMovie' => {ticket_price: 3.00, period: :modern, year: (1968...2000)},
-                      'NewMovie' => {ticket_price: 5.00, period: :new, year: (2000...2100)}}.freeze
+    MOVIES_CATALOG = { 'AncientMovie' => { ticket_price: 1.00, period: :ancient, year: (1900...1945) },
+                       'ClassicMovie' => { ticket_price: 1.50, period: :classic, year: (1945...1968) },
+                       'ModernMovie' => { ticket_price: 3.00, period: :modern, year: (1968...2000) },
+                       'NewMovie' => { ticket_price: 5.00, period: :new, year: (2000...2100) } }.freeze
 
-    def initialize(movies_collection: [], **args)
+    def initialize(movies_collection: [], **args) # rubocop:disable AbcSize
       @link = args[:link]
       @title = args[:title]
       @year = args[:year].to_i
@@ -40,7 +39,7 @@ module Movies
       movie_class = Movie::MOVIES_CATALOG.detect do |_k, v|
         v[:year].cover?(data[:year].to_i)
       end.first
-      Object.const_get(self.name.split('::').first).const_get(movie_class).new(movies_collection: movies_collection, **data)
+      Object.const_get(name.split('::').first).const_get(movie_class).new(movies_collection: movies_collection, **data)
     end
 
     def genres
@@ -81,7 +80,7 @@ module Movies
       nil
     end
 
-    def has_genre?(name)
+    def genre?(name)
       raise("Genre '#{name}' is not found in collection '#{movies_collection.title}'") unless movies_collection.genres.include?(name)
       genre.include?(name)
     end
@@ -91,13 +90,17 @@ module Movies
         if f == :exclude?
           exclude?(**value)
         else
-          value === send(f)
+          match_filters?(f, value)
         end
       end
     end
 
     def exclude?(**filter)
-      !matches?(**filter)
+      filter.none? { |f, value| match_filters?(f, value) }
+    end
+
+    def custom_filter
+      yield(itself)
     end
 
     def pretty_print
@@ -106,12 +109,16 @@ module Movies
 
     alias inspect pretty_print
 
-
     def <=>(other)
-      self.title <=> other.title
+      title <=> other.title
     end
 
     private
+
+    def match_filters?(f, value)
+      v = send(f)
+      value === v || (v.is_a?(Array) && v.include?(value.to_s)) # rubocop:disable CaseEquality
+    end
 
     def calculate_rating
       asterisk_number = ((rating - 8.0).round(1) * 10)
@@ -121,6 +128,5 @@ module Movies
     def split_to_module_and_class
       self.class.name.split('::')
     end
-
   end
 end

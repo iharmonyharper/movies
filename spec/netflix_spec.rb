@@ -48,7 +48,7 @@ module Cinematic
       before {netflix.pay(usd_25)}
       subject {netflix.show(title: 'Not Found')}
       it 'raise exception if no movie' do
-        expect {subject}.to raise_error(Theaters::MovieSearchError, "No results for '{:title=>\"Not Found\"}'")
+        expect {subject}.to raise_error(Theaters::MovieSearchError, 'No results for filter')
                                 .and avoid_changing(netflix, :balance)
       end
 
@@ -80,6 +80,66 @@ module Cinematic
       end
     end
 
+    context 'with custom filters' do
+      let(:modern_sci_fi) {{title: 'The Terminator', year: 1984, genre: 'Action,Sci-Fi', ticket_price: 4, rating: 8.1, duration: 107, country: 'UK', director: 'James Cameron', actors: 'Arnold Schwarzenegger,Linda Hamilton,Michael Biehn'}}
+      let(:new_modern_sci_fi) {{title: 'Terminator 2: Judgment Day', year: 1991, genre: 'Action,Sci-Fi', ticket_price: 4, rating: 9.3, duration: 107, country: 'USA', director: 'James Cameron', actors: 'Arnold Schwarzenegger,Linda Hamilton,Michael Biehn'}}
+      let(:newest_modern_sci_fi) {{title: 'Mad Max: Fury Road', year: 2015, genre: 'Action,Adventure,Sci-Fi', ticket_price: 4, rating: 8.1, duration: 107, country: 'USA', director: 'George Miller', actors: 'Tom Hardy,Charlize Theron,Nicholas Houl'}}
+
+      let(:collection) {MovieCollection.new(title: 'TestCollection',
+                                            collection_raw_data: [old_romance_comedy,
+                                                                  new_drama_comedy,
+                                                                  modern_sci_fi,
+                                                                  new_modern_sci_fi,
+                                                                  newest_modern_sci_fi],
+                                            movie_class: Movies::Movie)}
+
+      before {netflix.pay(usd_25)}
+
+      it 'should be a block' do
+        expect(netflix.define_filter(:good_sci_fi) { |movie|
+          movie.duration < 120 && movie.genre == 'Drama' || movie.genre == 'Sci-Fi' && movie.rating > 9.2 }
+        ).to be_a_kind_of(Proc)
+      end
+
+      it 'raises exception when not a block' do
+        expect {netflix.define_filter(:new_sci_fi)}.to raise_error('Can`t define filter.')
+      end
+
+      context '#define custom filter as simple block' do
+        it 'shows movie according to filter' do
+          netflix.define_filter(:new_sci_fi) {|movie| movie.genre.include?('Sci-Fi') && movie.period == :modern }
+          expect(netflix.show(new_sci_fi: true, title: /The/) {|movie| movie.director.include?('Cam')})
+              .to match('Now showing: The Terminator ')
+        end
+      end
+
+      context '#define custom filter with additional params' do
+        it 'shows movie according to filters' do
+          netflix.define_filter(:new_sci_fi) {|movie, year| movie.year > year && movie.genre.include?('Sci-Fi')}
+          expect(netflix.show(new_sci_fi: 1985, actors: 'Arnold Schwarzenegger'))
+              .to match('Now showing: Terminator 2: Judgment Day ')
+        end
+      end
+
+      context '#define custom filter from another filter with additional parameter' do
+        it 'shows movie according to filters' do
+          netflix.define_filter(:new_sci_fi) {|movie, year| movie.year > year && movie.genre.include?('Sci-Fi')}
+          netflix.define_filter(:newest_sci_fi, from: :new_sci_fi, arg: 2014)
+          expect(netflix.show(newest_sci_fi: true))
+              .to match('Now showing: Mad Max: Fury Road ')
+        end
+      end
+
+      context '#define custom filter as simple hash' do
+        it 'shows movie according to filter' do
+          netflix.define_filter(:new_sci_fi) {{genre: 'Sci-Fi', period: :modern}}
+          expect(netflix.show(new_sci_fi: true, title: /The/) {|movie| movie.director.include?('Cam')})
+              .to match('Now showing: The Terminator ')
+        end
+      end
+    end
+
+
     context '#take' do
       before {
         netflix_new.pay(usd_25)
@@ -102,4 +162,7 @@ module Cinematic
     end
   end
 end
+
+
+
 

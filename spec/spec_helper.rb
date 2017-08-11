@@ -1,5 +1,5 @@
 RSpec::Matchers.define_negated_matcher :avoid_changing, :change
-require_relative '../app/cinematic'
+require_relative '../lib/cinematic'
 # require_relative '../helpers/csv_to_hash_converter'
 
 HEADERS = %i[link title year country date genre duration rating director actors].freeze

@@ -9,6 +9,4 @@ module Cinematic
   include Theaters
   Theaters::Netflix.extend(Cashbox)
   Theaters::Theater.include(Cashbox)
-
-
 end
